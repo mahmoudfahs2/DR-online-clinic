@@ -1,0 +1,140 @@
+.doctor-card {
+  width: 100%;
+  max-width: 750px;
+  display: flex;
+  gap: 25px;
+  padding: 25px;
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  box-sizing: border-box;
+}
+
+
+.doctor-image-container {
+  width: 180px;
+  height: 220px;
+  flex-shrink: 0;
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+.doctor-image-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+
+.doctor-info {
+  flex: 1;
+}
+
+
+.doctor-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.doctor-name h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+
+.verified {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background-color: #2563eb;
+  color: white;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+
+.doctor-specialty {
+  margin: 8px 0 20px;
+  font-size: 16px;
+  color: #6b7280;
+}
+
+
+.doctor-details {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.doctor-details div {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.doctor-details span,
+.availability span {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.doctor-details strong {
+  font-size: 15px;
+}
+
+
+.availability {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 12px 15px;
+  margin-bottom: 20px;
+  background-color: #f0f9ff;
+  border-radius: 10px;
+}
+
+.availability strong {
+  color: #2563eb;
+}
+
+
+.book-button {
+  width: 100%;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  background-color: #2563eb;
+  color: white;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.book-button:hover {
+  background-color: #1d4ed8;
+}
+
+
+@media (max-width: 650px) {
+  .doctor-card {
+    flex-direction: column;
+  }
+
+  .doctor-image-container {
+    width: 100%;
+    height: 250px;
+  }
+
+  .doctor-details {
+    grid-template-columns: 1fr;
+  }
+}
