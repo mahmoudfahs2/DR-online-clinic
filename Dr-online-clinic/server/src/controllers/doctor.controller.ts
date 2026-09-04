@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import Doctor from "../models/Doctor";
 
+
+
 export const getDoctors = async (
   req: Request,
   res: Response
@@ -40,3 +42,12 @@ export const getDoctorById = async (
     });
   }
 };
+export const createDoctor = async (req: Request, res: Response) => {
+  try {
+    const newDoctor = new Doctor(req.body);
+    await newDoctor.save();
+    res.status(201).json(newDoctor);
+  } catch (error) {
+    res.status(400).json({ message: "Error creating doctor", error });
+  }
+  };
