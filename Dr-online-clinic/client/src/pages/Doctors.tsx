@@ -1,41 +1,83 @@
-
+import { useEffect, useState } from "react";
 import DrCard from "../components/DoctorCard";
+
+type Doctor = {
+  _id: string;
+  name: string;
+  specialty: string;
+  image: string;
+  rating: number;
+  yearsInPractice: number;
+  visitLength: number;
+  availableTime: string;
+};
+
 function Doctors() {
+  const [doctors, setDoctors] = useState<Doctor[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const fetchDoctors = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/api/doctors");
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch doctors");
+        }
+
+        const data = await response.json();
+        setDoctors(data);
+      } catch (error) {
+        console.error("Error fetching doctors:", error);
+        setError("Unable to load doctors.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDoctors();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="doctors-page">
+        <h1>Find a doctor</h1>
+        <p>Loading doctors...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="doctors-page">
+        <h1>Find a doctor</h1>
+        <p>{error}</p>
+      </div>
+    );
+  }
+
   return (
     <div className="doctors-page">
-        <h1>Find a doctor</h1>
-        <div className="doctors-list">
-                <DrCard
-          name="Dr. maya"
-          specialty="Board-certified family physician focused on preventive healthcare."
-          image="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=400&q=80"
-          rating={4.9}
-          yearsInPractice={12}
-          visitLength={30}
-          availableTime="Today, 03:30 PM"
-        />
-         <DrCard
-          name="Dr. John "
-          specialty="Experienced internal medicine physician focused on patient care."
-          image="https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&w=400&q=80"
-          rating={4.0}
-          yearsInPractice={10}
-          visitLength={30}
-          availableTime="Today, 04:00 PM"
-        />
-         
-         <DrCard
-          name="Dr. Ahmad "
-          specialty="Experienced internal medicine physician focused on patient care."
-          image="https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&w=400&q=80"
-          rating={3.8}
-          yearsInPractice={10}
-          visitLength={30}
-          availableTime="Today, 04:00 PM"
-        />
+      <h1>Find a doctor</h1>
 
-        </div>
+      <div className="doctors-list">
+        {doctors.map((doctor) => (
+          <DrCard
+            key={doctor._id}
+            id={doctor._id} /* تم إضافة التمرير هنا */
+            name={doctor.name}
+            specialty={doctor.specialty}
+            image={doctor.image}
+            rating={doctor.rating}
+            yearsInPractice={doctor.yearsInPractice}
+            visitLength={doctor.visitLength}
+            availableTime={doctor.availableTime}
+          />
+        ))}
+      </div>
     </div>
   );
 }
+
 export default Doctors;

@@ -1,6 +1,8 @@
+import React from "react";
+import { useNavigate } from "react-router-dom";
 
-
-type DrCardProps = {
+export type DrCardProps = {
+  id: string;
   name: string;
   specialty: string;
   image: string;
@@ -11,6 +13,7 @@ type DrCardProps = {
 };
 
 function DoctorCard({
+  id,
   name,
   specialty,
   image,
@@ -19,6 +22,12 @@ function DoctorCard({
   visitLength,
   availableTime,
 }: DrCardProps) {
+  const navigate = useNavigate();
+
+  const handleBooking = () => {
+    navigate(`/doctors/${id}`);
+  };
+
   return (
     <div className="doctor-card">
       <div className="doctor-image-container">
@@ -38,12 +47,10 @@ function DoctorCard({
             <span>Rating</span>
             <strong>{rating} / 5</strong>
           </div>
-
           <div>
             <span>Years in practice</span>
             <strong>{yearsInPractice} years</strong>
           </div>
-
           <div>
             <span>Visit length</span>
             <strong>{visitLength} minutes</strong>
@@ -55,7 +62,9 @@ function DoctorCard({
           <strong>{availableTime}</strong>
         </div>
 
-        <button className="book-button">Book a visit →</button>
+        <button className="book-button" onClick={handleBooking}>
+          Book a visit →
+        </button>
       </div>
     </div>
   );
