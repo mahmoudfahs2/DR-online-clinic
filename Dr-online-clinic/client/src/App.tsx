@@ -1,7 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Doctors from "./pages/Doctors";
-import DoctorDetails from "./components/DoctorDetails";
+import {DoctorDetails}from "./components/DoctorDetails";
 import "./App.css";
 
 function App() {
