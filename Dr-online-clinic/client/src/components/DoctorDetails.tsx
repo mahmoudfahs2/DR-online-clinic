@@ -39,9 +39,7 @@ setMessage('');
 try {
 const response = await fetch('http://localhost:5000/api/appointments', {
 method: 'POST',
-headers: {
-'Content-Type': 'application/json',
-},
+headers: { 'Content-Type': 'application/json' },
 body: JSON.stringify({
 patientName,
 patientEmail,
@@ -53,113 +51,146 @@ timeSlot,
 
 if (response.ok) {
 setMessage('Appointment booked successfully!');
-// إعادة التوجيه إلى لوحة المواعيد أو الرئيسية بعد ثانتين
-setTimeout(() => navigate('/doctors'), 2000);
+setTimeout(() => navigate('/appointments'), 1500);
 } else {
-setMessage('Failed to book appointment. Please try again.');
+setMessage('Failed to book appointment.');
 }
-} catch (error) {
-console.error('Booking error:', error);
+} catch  {
 setMessage('Error connecting to server.');
 } finally {
 setLoading(false);
 }
 };
 
-if (!doctor) return <div>Loading doctor details...</div>;
+if (!doctor) return <div style={{ padding: '40px', textAlign: 'center' }}>Loading clinic data...</div>;
 
 return (
-<div style={{ maxWidth: '800px', margin: '20px auto', padding: '20px' }}>
-<button onClick={() => navigate(-1)} style={{ marginBottom: '20px' }}>
-← Back
+<div className="app-container" style={{ maxWidth: '850px' }}>
+<button
+  onClick={() => navigate(-1)}
+  style={{
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '8px',
+
+    padding: '10px 10px',
+
+    background: 'rgb(255, 255, 255)',
+    border: '1px solid #e2e8f0',
+    borderRadius: '10px',
+
+    color: '#564769',
+    cursor: 'pointer',
+
+    marginBottom: '10px',
+
+    fontSize: '14px',
+    fontWeight: 400,
+
+    boxShadow: '0 2px 8px rgba(15, 23, 42, 0.06)',
+
+    transition: 'all 0.2s ease',
+  }}
+>
+  <span style={{ fontSize: '18px' }}>←</span>
+  <span>Back to Doctors List</span>
 </button>
 
-{/* تفاصيل الطبيب */}
-<div style={{ display: 'flex', gap: '20px', marginBottom: '30px' }}>
+<div className="medical-card" style={{ padding: '24px', marginBottom: '24px', display: 'flex', gap: '24px', alignItems: 'center' }}>
 <img
 src={doctor.image}
 alt={doctor.name}
-style={{ width: '150px', height: '150px', borderRadius: '8px', objectFit: 'cover' }}
+style={{ width: '130px', height: '130px', borderRadius: '12px', objectFit: 'cover' }}
 />
+<div style={{ flex: 1 }}>
+<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+<h2 style={{ margin: '0 0 8px 0', fontSize: '1.5rem' }}>{doctor.name}</h2>
+<span className="badge-available">{doctor.availableTime}</span>
+</div>
+<p style={{ color: 'var(--secondary)', fontWeight: 500, margin: '0 0 12px 0' }}>{doctor.specialty}</p>
+<div style={{ display: 'flex', gap: '20px', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
+<span>⭐<strong>{doctor.rating}</strong> / 5</span>
+<span>🩺<strong>{doctor.yearsInPractice}</strong> Years Experience</span>
+</div>
+</div>
+</div>
+
+
+<div className="medical-card" style={{ padding: '32px' }}>
+<h3 style={{ margin: '0 0 8px 0', color: 'var(--primary)' }}>Book Your Appointment</h3>
+<p style={{ color: 'var(--text-muted)', margin: '0 0 24px 0', fontSize: '0.95rem' }}>Fill in your details below to secure your consultation slot.</p>
+
+{message && (
+<div style={{ padding: '12px', borderRadius: '8px', marginBottom: '20px', backgroundColor: message.includes('success') ? '#ecfdf5' : '#fef2f2', color: message.includes('success') ? '#047857' : '#dc2626' }}>
+{message}
+</div>
+)}
+
+
+<form onSubmit={handleBooking} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
 <div>
-<h2>{doctor.name}</h2>
-<p><strong>Specialty:</strong> {doctor.specialty}</p>
-<p><strong>Rating:</strong> {doctor.rating} / 5</p>
-<p><strong>Experience:</strong> {doctor.yearsInPractice} years</p>
-<p><strong>Next Available:</strong> {doctor.availableTime}</p>
-</div>
-</div>
-
-{/* نموذج الحجز */}
-<div style={{ borderTop: '1px solid #ccc', paddingTop: '20px' }}>
-<h3>Book Your Appointment</h3>
-
-{message && <p style={{ color: message.includes('successfully') ? 'green' : 'red' }}>{message}</p>}
-
-<form onSubmit={handleBooking}>
-<div style={{ marginBottom: '15px' }}>
-<label>Your Full Name</label>
+<label style={{ display: 'block', marginBottom: '6px', fontWeight: 500, fontSize: '0.9rem' }}>Full Name</label>
 <input
 type="text"
-placeholder="John Doe"
+placeholder="e.g. John Doe"
 value={patientName}
 onChange={(e) => setPatientName(e.target.value)}
 required
-style={{ width: '100%', padding: '8px', marginTop: '5px' }}
+style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid var(--border-color)', boxSizing: 'border-box' }}
 />
 </div>
 
-<div style={{ marginBottom: '15px' }}>
-<label>Email Address</label>
+<div>
+<label style={{ display: 'block', marginBottom: '6px', fontWeight: 500, fontSize: '0.9rem' }}>Email Address</label>
 <input
 type="email"
 placeholder="patient@example.com"
 value={patientEmail}
 onChange={(e) => setPatientEmail(e.target.value)}
 required
-style={{ width: '100%', padding: '8px', marginTop: '5px' }}
+style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid var(--border-color)', boxSizing: 'border-box' }}
 />
 </div>
 
-Mahmoud:
-<div style={{ display: 'flex', gap: '15px', marginBottom: '15px' }}>
-<div style={{ flex: 1 }}>
-<label>Date</label>
+<div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+<div>
+<label style={{ display: 'block', marginBottom: '6px', fontWeight: 500, fontSize: '0.9rem' }}>Preferred Date</label>
 <input
 type="date"
 value={date}
 onChange={(e) => setDate(e.target.value)}
 required
-style={{ width: '100%', padding: '8px', marginTop: '5px' }}
+style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid var(--border-color)', boxSizing: 'border-box' }}
 />
 </div>
 
-<div style={{ flex: 1 }}>
-<label>Time Slot</label>
+<div>
+<label style={{ display: 'block', marginBottom: '6px', fontWeight: 500, fontSize: '0.9rem' }}>Preferred Time</label>
 <input
 type="time"
 value={timeSlot}
 onChange={(e) => setTimeSlot(e.target.value)}
 required
-style={{ width: '100%', padding: '8px', marginTop: '5px' }}
+style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid var(--border-color)', boxSizing: 'border-box' }}
 />
 </div>
 </div>
 
-<button
-type="submit"
-disabled={loading}
-style={{
-width: '100%',
-padding: '12px',
-backgroundColor: '#007bff',
-color: '#fff',
-border: 'none',
-borderRadius: '5px',
-cursor: 'pointer',
-}}
->
-{loading ? 'Confirming...' : 'Confirm Booking'}
+<button type="submit" className="btn-primary" disabled={loading} style={{
+  marginTop: '12px',
+  padding: '14px 18px',
+
+  background: 'linear-gradient(135deg, #2563eb, #06b6d4)',
+  color: '#ffffff',
+
+  borderRadius: '12px',
+  border: 'none',
+
+  boxShadow: '0 6px 18px rgba(37, 99, 235, 0.25)',
+
+  fontWeight: 600,
+}}>
+{loading ? 'Confirming Appointment...' : 'Confirm Appointment'}
 </button>
 </form>
 </div>

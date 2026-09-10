@@ -1,73 +1,72 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
+import React from 'react';
+import { Link } from 'react-router-dom';
 
-export type DrCardProps = {
-  id: string;
+export interface Doctor {
+  _id: string;
   name: string;
   specialty: string;
   image: string;
   rating: number;
   yearsInPractice: number;
-  visitLength: number;
+  visitLength?: number;
   availableTime: string;
-};
+}
 
-function DoctorCard({
-  id,
-  name,
-  specialty,
-  image,
-  rating,
-  yearsInPractice,
-  visitLength,
-  availableTime,
-}: DrCardProps) {
-  const navigate = useNavigate();
+interface DoctorCardProps {
+  doctor: Doctor;
+}
 
-  const handleBooking = () => {
-    navigate(`/doctors/${id}`);
-  };
-
+export const DoctorCard: React.FC<DoctorCardProps> = ({ doctor }) => {
   return (
-    <div className="doctor-card">
-      <div className="doctor-image-container">
-        <img src={image} alt={name} />
+    <div className="medical-card" style={{ display: 'flex', padding: '20px', gap: '20px', alignItems: 'center' }}>
+      <img
+        src={doctor.image}
+        alt={doctor.name}
+        style={{ width: '110px', height: '110px', borderRadius: '12px', objectFit: 'cover' }}
+      />
+      <div style={{ flex: 1 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+          <h3 style={{ margin: 0, fontSize: '1.25rem', color: '#0f172a' }}>{doctor.name}</h3>
+          <span className="badge-available">{doctor.availableTime}</span>
+        </div>
+        <p style={{ margin: '0 0 10px 0', color: '#0d9488', fontWeight: 500 }}>{doctor.specialty}</p>
+        <div style={{ display: 'flex', gap: '16px', color: '#64748b', fontSize: '0.9rem' }}>
+          <span>⭐ <strong>{doctor.rating}</strong> / 5</span>
+          <span>🩺 <strong>{doctor.yearsInPractice}</strong> Years Experience</span>
+        </div>
       </div>
+    <Link
+  to={`/doctors/${doctor._id}`}
+  style={{
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '12px',
 
-      <div className="doctor-info">
-        <div className="doctor-name">
-          <h2>{name}</h2>
-          <span className="verified">✓</span>
-        </div>
+    padding: '12px 22px',
 
-        <p className="doctor-specialty">{specialty}</p>
+    background: 'linear-gradient(135deg, #2563eb, #06b6d4)',
+    color: '#fff',
 
-        <div className="doctor-details">
-          <div>
-            <span>Rating</span>
-            <strong>{rating} / 5</strong>
-          </div>
-          <div>
-            <span>Years in practice</span>
-            <strong>{yearsInPractice} years</strong>
-          </div>
-          <div>
-            <span>Visit length</span>
-            <strong>{visitLength} minutes</strong>
-          </div>
-        </div>
+    textDecoration: 'none',
+    whiteSpace: 'nowrap',
 
-        <div className="availability">
-          <span>Next available</span>
-          <strong>{availableTime}</strong>
-        </div>
+    borderRadius: '12px',
 
-        <button className="book-button" onClick={handleBooking}>
-          Book a visit →
-        </button>
-      </div>
+    fontSize: '15px',
+    fontWeight: '600',
+
+    boxShadow: '0 6px 16px rgba(37, 99, 235, 0.25)',
+
+    transition: 'all 0.25s ease',
+
+    cursor: 'pointer',
+  }}
+>
+  Book a visit →
+</Link>
     </div>
   );
-}
+};
 
 export default DoctorCard;
