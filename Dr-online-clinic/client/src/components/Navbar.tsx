@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 
@@ -10,12 +9,23 @@ import {
   Settings,
   MessageCircle,
   Phone,
+  UserCheck,
+  LogOut,
+  LogIn,
 } from "lucide-react";
 
 export const Navbar: React.FC = () => {
   const location = useLocation();
 
-  
+
+  const user = JSON.parse(localStorage.getItem("user") || "null");
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    window.location.href = "/login";
+  };
+
   const navItems = [
     {
       label: "Dashboard",
@@ -68,11 +78,8 @@ export const Navbar: React.FC = () => {
         zIndex: 1000,
       }}
     >
-      
-
       <div>
-   
-
+        {/* Logo Header */}
         <div
           style={{
             display: "flex",
@@ -88,8 +95,6 @@ export const Navbar: React.FC = () => {
             paddingLeft: "0.5rem",
           }}
         >
-        
-
           <div
             style={{
               width: "38px",
@@ -119,8 +124,7 @@ export const Navbar: React.FC = () => {
           <span>DR.online</span>
         </div>
 
-   
-
+        {/* Navigation */}
         <nav
           style={{
             display: "flex",
@@ -134,7 +138,6 @@ export const Navbar: React.FC = () => {
               (item.path === "/doctors" &&
                 location.pathname === "/");
 
-            
             const Icon = item.icon;
 
             return (
@@ -173,7 +176,6 @@ export const Navbar: React.FC = () => {
 
                   cursor: "pointer",
                 }}
-
                 onMouseEnter={(e) => {
                   if (!isActive) {
                     e.currentTarget.style.background =
@@ -186,7 +188,6 @@ export const Navbar: React.FC = () => {
                       "translateX(4px)";
                   }
                 }}
-
                 onMouseLeave={(e) => {
                   if (!isActive) {
                     e.currentTarget.style.background =
@@ -200,8 +201,6 @@ export const Navbar: React.FC = () => {
                   }
                 }}
               >
-                {/* Real SVG icon */}
-
                 <Icon
                   size={20}
                   strokeWidth={2}
@@ -210,11 +209,7 @@ export const Navbar: React.FC = () => {
                   }}
                 />
 
-          
-
                 <span>{item.label}</span>
-
-               
 
                 {isActive && (
                   <span
@@ -233,11 +228,8 @@ export const Navbar: React.FC = () => {
         </nav>
       </div>
 
-    
-
       <div>
-      
-
+    
         <div
           style={{
             borderTop: "1px solid #f1f5f9",
@@ -247,8 +239,6 @@ export const Navbar: React.FC = () => {
             marginTop: "1rem",
           }}
         >
-     
-
           <div
             style={{
               display: "flex",
@@ -263,8 +253,6 @@ export const Navbar: React.FC = () => {
               backgroundColor: "#f8fafc",
             }}
           >
-            
-
             <div
               style={{
                 width: "36px",
@@ -279,14 +267,13 @@ export const Navbar: React.FC = () => {
                 backgroundColor: "#dbeafe",
 
                 color: "#2563eb",
+                flexShrink: 0,
               }}
             >
-              <LayoutDashboard size={18} />
+              {user ? <UserCheck size={18} /> : <LayoutDashboard size={18} />}
             </div>
 
-         
-
-            <div>
+            <div style={{ overflow: "hidden", flex: 1 }}>
               <p
                 style={{
                   margin: 0,
@@ -296,9 +283,12 @@ export const Navbar: React.FC = () => {
                   fontWeight: "700",
 
                   color: "#1f2937",
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
                 }}
               >
-                Patient Portal
+                {user ? user.name : "Patient Portal"}
               </p>
 
               <span
@@ -306,16 +296,69 @@ export const Navbar: React.FC = () => {
                   fontSize: "0.75rem",
 
                   color: "#94a3b8",
+                  display: "block",
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
                 }}
               >
-                Welcome back
+                {user ? user.email : "Welcome back"}
               </span>
             </div>
           </div>
+
+          {/* Sign Out / Sign In Action Buttons */}
+          <div style={{ marginTop: "8px" }}>
+            {user ? (
+              <button
+                onClick={handleLogout}
+                style={{
+                  width: "100%",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "6px",
+                  padding: "8px",
+                  borderRadius: "8px",
+                  backgroundColor: "#fee2e2",
+                  color: "#ef4444",
+                  border: "none",
+                  fontSize: "0.75rem",
+                  fontWeight: "700",
+                  cursor: "pointer",
+                  transition: "background 0.2s ease",
+                }}
+              >
+                <LogOut size={14} />
+                <span>Sign Out</span>
+              </button>
+            ) : (
+              <Link
+                to="/login"
+                style={{
+                  width: "100%",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "6px",
+                  padding: "8px",
+                  borderRadius: "8px",
+                  backgroundColor: "#dbeafe",
+                  color: "#2563eb",
+                  textDecoration: "none",
+                  fontSize: "0.75rem",
+                  fontWeight: "700",
+                  boxSizing: "border-box",
+                }}
+              >
+                <LogIn size={14} />
+                <span>Sign In / Register</span>
+              </Link>
+            )}
+          </div>
         </div>
 
-       
-
+        {/* Support Section */}
         <div
           style={{
             marginTop: "12px",
@@ -344,10 +387,8 @@ export const Navbar: React.FC = () => {
             Need Help?
           </p>
 
-          
-
           <a
-            href="https://wa.me/961XXXXXXXX"
+            href="https://wa.me/96181676878"
             target="_blank"
             rel="noopener noreferrer"
             style={{
@@ -382,10 +423,8 @@ export const Navbar: React.FC = () => {
             <span>WhatsApp</span>
           </a>
 
-         
-
           <a
-            href="tel:+961XXXXXXXX"
+            href="tel:+96181676878"
             style={{
               display: "flex",
               alignItems: "center",
@@ -417,7 +456,7 @@ export const Navbar: React.FC = () => {
           </a>
         </div>
 
-
+        {/* Social Links */}
         <div
           style={{
             marginTop: "14px",
@@ -429,8 +468,6 @@ export const Navbar: React.FC = () => {
             gap: "10px",
           }}
         >
-        
-
           <a
             href="https://facebook.com/yourpage"
             target="_blank"
@@ -478,8 +515,6 @@ export const Navbar: React.FC = () => {
           >
             f
           </a>
-
-         
 
           <a
             href="https://instagram.com/yourpage"
@@ -529,13 +564,7 @@ export const Navbar: React.FC = () => {
           >
             ◎
           </a>
-
-          
-
-         
         </div>
-
-     
 
         <p
           style={{
