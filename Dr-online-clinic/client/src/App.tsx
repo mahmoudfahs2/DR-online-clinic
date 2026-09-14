@@ -5,6 +5,7 @@ import { DoctorDetails } from "./components/DoctorDetails";
 import { Appointments } from "./pages/Appointments";
 import "./App.css";
 import {Auth} from './pages/Auth';
+import {Dashboard}   from "./pages/Dashboard";
 
 function App() {
   return (
@@ -44,6 +45,7 @@ function App() {
             <Route path="/login" element={<Auth />} />
             
             <Route path="/appointments" element={<Appointments />} />
+            <Route path="/dashboard" element={<Dashboard />} />
           </Routes>
         </main>
       </div>

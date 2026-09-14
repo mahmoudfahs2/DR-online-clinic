@@ -6,7 +6,6 @@ import {
   Stethoscope,
   CalendarDays,
   FileText,
-  Settings,
   MessageCircle,
   Phone,
   UserCheck,
@@ -47,11 +46,7 @@ export const Navbar: React.FC = () => {
       path: "/records",
       icon: FileText,
     },
-    {
-      label: "Settings",
-      path: "/settings",
-      icon: Settings,
-    },
+
   ];
 
   return (
