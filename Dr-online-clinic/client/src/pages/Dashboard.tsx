@@ -247,7 +247,6 @@ export const Dashboard: React.FC = () => {
           </div>
         </div>
 
-        {/* Right Side: Appointments List */}
         <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
