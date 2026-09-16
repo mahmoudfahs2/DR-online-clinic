@@ -19,7 +19,7 @@ interface DoctorCardProps {
 }
 
 export const DoctorCard: React.FC<DoctorCardProps> = ({ doctor }) => {
-  /
+  
   const isAvailable = doctor.isAvailableNow ?? true;
 
   return (

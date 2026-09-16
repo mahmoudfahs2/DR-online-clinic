@@ -6,6 +6,7 @@ import { Appointments } from "./pages/Appointments";
 import "./App.css";
 import {Auth} from './pages/Auth';
 import {Dashboard}   from "./pages/Dashboard";
+import {MedicalRecords } from "./pages/MedicalRecords";
 
 function App() {
   return (
@@ -46,6 +47,7 @@ function App() {
             
             <Route path="/appointments" element={<Appointments />} />
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/records" element={<MedicalRecords />} />
           </Routes>
         </main>
       </div>
