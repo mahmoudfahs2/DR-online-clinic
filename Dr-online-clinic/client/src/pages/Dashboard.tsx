@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-// 1. Interfaces & Types
+
 interface UserType {
   _id?: string;
   name?: string;
@@ -22,7 +22,7 @@ interface Appointment {
   id: string;
   doctorName: string;
   specialty: string;
-  date: string; // YYYY-MM-DD
+  date: string; 
   time: string;
   status: string;
 }
@@ -32,7 +32,6 @@ interface DayItem {
   fullDate: string;
   hasAppointment: boolean;
 }
-
 
 const getUserFromStorage = (): UserType | null => {
   try {
@@ -45,9 +44,7 @@ const getUserFromStorage = (): UserType | null => {
 };
 
 export const Dashboard: React.FC = () => {
- 
   const user = getUserFromStorage();
-
 
   const [selectedDate, setSelectedDate] = useState<string>('2026-09-20');
   const [currentMonth, setCurrentMonth] = useState<Date>(new Date(2026, 8, 1)); // September 2026
@@ -79,7 +76,6 @@ export const Dashboard: React.FC = () => {
     },
   ]);
 
-  
   const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
   const getDaysInMonth = (): (DayItem | null)[] => {
@@ -88,11 +84,9 @@ export const Dashboard: React.FC = () => {
     const date = new Date(year, month, 1);
     const days: (DayItem | null)[] = [];
 
-    
     for (let i = 0; i < date.getDay(); i++) {
       days.push(null);
     }
-
 
     while (date.getMonth() === month) {
       const yearStr = date.getFullYear();
@@ -123,16 +117,39 @@ export const Dashboard: React.FC = () => {
   };
 
   return (
-    <div style={{ padding: '2rem', backgroundColor: '#f8fafc', minHeight: '100vh', fontFamily: "'Inter', sans-serif" }}>
-     
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
+    <div
+      style={{
+        padding: '2rem',
+        minHeight: '100vh',
+        fontFamily: "'Inter', sans-serif",
+       
+        backgroundImage:`linear-gradient(135deg, rgba(248, 250, 252, 0.93), rgba(240, 249, 255, 0.95)), url('https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1920&q=80')`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed',
+      }}
+    >
+   
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: '2rem',
+          flexWrap: 'wrap',
+          gap: '1rem',
+        }}
+      >
         <div>
           <h1 style={{ fontSize: '1.875rem', fontWeight: '800', color: '#0f172a', margin: '0 0 0.5rem 0' }}>
             Welcome, {user?.name || 'Patient'} 👋
           </h1>
-          <p style={{ color: '#64748b', margin: 0 }}>Manage your schedule and health appointments seamlessly.</p>
+          <p style={{ color: '#475569', margin: 0, fontSize: '0.95rem', fontWeight: '500' }}>
+            Manage your schedule and health appointments seamlessly.
+          </p>
         </div>
-<Link
+
+        <Link
           to="/doctors"
           style={{
             display: 'inline-flex',
@@ -140,12 +157,12 @@ export const Dashboard: React.FC = () => {
             gap: '8px',
             backgroundColor: '#0284c7',
             color: '#ffffff',
-            padding: '12px 20px',
+            padding: '12px 22px',
             borderRadius: '12px',
             fontWeight: '700',
             fontSize: '0.9rem',
             textDecoration: 'none',
-            boxShadow: '0 8px 16px -4px rgba(2, 132, 199, 0.3)',
+            boxShadow: '0 4px 12px rgba(2, 132, 199, 0.3)',
             transition: 'all 0.2s ease',
           }}
         >
@@ -157,18 +174,19 @@ export const Dashboard: React.FC = () => {
       
       <div
         style={{
-          backgroundColor: '#ffffff',
+          backgroundColor: 'rgba(255, 255, 255, 0.95)', 
+          backdropFilter: 'blur(8px)',
           borderRadius: '24px',
           border: '1px solid #e2e8f0',
-          boxShadow: '0 10px 30px -10px rgba(0, 0, 0, 0.05)',
+          boxShadow: '0 10px 30px -10px rgba(0, 0, 0, 0.08)',
           padding: '2rem',
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-          gap: '2rem',
+          gap: '2.5rem',
         }}
       >
-        
-        <div style={{ borderRight: '1px solid #f1f5f9', paddingRight: '1rem' }}>
+      
+        <div style={{ borderRight: '1px solid #f1f5f9', paddingRight: '1.5rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
             <h2 style={{ fontSize: '1.25rem', fontWeight: '800', color: '#0f172a', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
               <CalendarIcon size={22} color="#0284c7" />
@@ -180,20 +198,34 @@ export const Dashboard: React.FC = () => {
             <div style={{ display: 'flex', gap: '6px' }}>
               <button
                 onClick={handlePrevMonth}
-                style={{ padding: '6px', borderRadius: '8px', border: '1px solid #cbd5e1', backgroundColor: '#fff', cursor: 'pointer', display: 'flex' }}
+                style={{
+                  padding: '6px',
+                  borderRadius: '8px',
+                  border: '1px solid #cbd5e1',
+                  backgroundColor: '#ffffff',
+                  cursor: 'pointer',
+                  display: 'flex',
+                }}
               >
                 <ChevronLeft size={18} color="#475569" />
               </button>
               <button
                 onClick={handleNextMonth}
-                style={{ padding: '6px', borderRadius: '8px', border: '1px solid #cbd5e1', backgroundColor: '#fff', cursor: 'pointer', display: 'flex' }}
+                style={{
+                  padding: '6px',
+                  borderRadius: '8px',
+                  border: '1px solid #cbd5e1',
+                  backgroundColor: '#ffffff',
+                  cursor: 'pointer',
+                  display: 'flex',
+                }}
               >
                 <ChevronRight size={18} color="#475569" />
               </button>
             </div>
           </div>
 
-          {/* Days Header Grid */}
+         
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '8px', textAlign: 'center', marginBottom: '0.8rem' }}>
             {daysOfWeek.map((day) => (
               <span key={day} style={{ fontSize: '0.75rem', fontWeight: '700', color: '#94a3b8', textTransform: 'uppercase' }}>
@@ -202,7 +234,7 @@ export const Dashboard: React.FC = () => {
             ))}
           </div>
 
-          
+         
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '8px' }}>
             {daysInMonth.map((item, index) => {
               if (!item) return <div key={`empty-${index}`} />;
@@ -216,7 +248,7 @@ export const Dashboard: React.FC = () => {
                   style={{
                     padding: '12px 0',
                     borderRadius: '12px',
-                    border: 'none',
+                    border: isSelected ? '1px solid #0284c7' : '1px solid transparent',
                     backgroundColor: isSelected ? '#0284c7' : '#f8fafc',
                     color: isSelected ? '#ffffff' : '#1e293b',
                     fontWeight: isSelected ? '800' : '600',
@@ -226,7 +258,7 @@ export const Dashboard: React.FC = () => {
                     transition: 'all 0.2s ease',
                   }}
                 >
-{item.dayNumber}
+                  {item.dayNumber}
                   {item.hasAppointment && (
                     <span
                       style={{
@@ -247,13 +279,14 @@ export const Dashboard: React.FC = () => {
           </div>
         </div>
 
+       
         <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
               <h3 style={{ fontSize: '1.1rem', fontWeight: '700', color: '#0f172a', margin: 0 }}>
                 Appointments on {selectedDate}
               </h3>
-              <span style={{ fontSize: '0.825rem', backgroundColor: '#e0f2fe', color: '#0284c7', padding: '4px 10px', borderRadius: '20px', fontWeight: '700' }}>
+              <span style={{ fontSize: '0.825rem', backgroundColor: '#e0f2fe', color: '#0284c7', padding: '4px 12px', borderRadius: '20px', fontWeight: '700' }}>
                 {selectedDayAppointments.length} Booked
               </span>
             </div>
@@ -266,36 +299,37 @@ export const Dashboard: React.FC = () => {
                     style={{
                       padding: '1.25rem',
                       borderRadius: '16px',
-                      backgroundColor: '#f0f9ff',
-                      border: '1px solid #bae6fd',
+                      backgroundColor: '#ffffff',
+                      border: '1px solid #e0f2fe',
+                      boxShadow: '0 2px 8px rgba(2, 132, 199, 0.06)',
                       display: 'flex',
                       flexDirection: 'column',
                       gap: '0.75rem',
                     }}
                   >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
                       <div
                         style={{
-                          width: '44px',
-                          height: '44px',
+                          width: '46px',
+                          height: '46px',
                           borderRadius: '12px',
-                          backgroundColor: '#0284c7',
-                          color: '#ffffff',
+                          backgroundColor: '#e0f2fe',
+                          color: '#0284c7',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
                         }}
                       >
-                        <User size={22} />
+                        <User size={24} />
                       </div>
                       <div>
-                        <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: '700', color: '#0f172a' }}>{app.doctorName}</h4>
-                        <span style={{ fontSize: '0.8rem', color: '#0284c7', fontWeight: '600' }}>{app.specialty}</span>
+                        <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: '700', color: '#0f172a' }}>{app.doctorName}</h4>
+                        <span style={{ fontSize: '0.825rem', color: '#0284c7', fontWeight: '600' }}>{app.specialty}</span>
                       </div>
                     </div>
 
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid #e0f2fe', paddingTop: '0.75rem', fontSize: '0.825rem', color: '#475569' }}>
-                      <span style={{ display: 'flex', alignItems: 'center', gap: '4px', fontWeight: '600' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid #f1f5f9', paddingTop: '0.75rem', fontSize: '0.85rem', color: '#475569' }}>
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '600' }}>
                         <Clock size={16} color="#0284c7" /> {app.time}
                       </span>
                       <span style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#16a34a', fontWeight: '700' }}>
@@ -307,22 +341,21 @@ export const Dashboard: React.FC = () => {
               </div>
             ) : (
               <div style={{ textAlign: 'center', padding: '3rem 1rem', backgroundColor: '#f8fafc', borderRadius: '16px', border: '1px dashed #cbd5e1' }}>
-<CalendarIcon size={36} color="#94a3b8" style={{ marginBottom: '0.5rem' }} />
+                <CalendarIcon size={36} color="#94a3b8" style={{ marginBottom: '0.5rem' }} />
                 <p style={{ margin: 0, color: '#64748b', fontSize: '0.9rem', fontWeight: '600' }}>No appointments scheduled for this day.</p>
                 <p style={{ margin: '0.25rem 0 0 0', color: '#94a3b8', fontSize: '0.8rem' }}>Select another date or click "Book New Appointment".</p>
               </div>
             )}
           </div>
 
-          
-          <div style={{ marginTop: '2rem', paddingTop: '1rem', borderTop: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-around', textAlign: 'center' }}>
+          <div style={{ marginTop: '2rem', paddingTop: '1.25rem', borderTop: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-around', textAlign: 'center' }}>
             <div>
-              <span style={{ display: 'block', fontSize: '1.25rem', fontWeight: '800', color: '#0f172a' }}>{appointments.length}</span>
+              <span style={{ display: 'block', fontSize: '1.35rem', fontWeight: '800', color: '#0f172a' }}>{appointments.length}</span>
               <span style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: '600' }}>Total Bookings</span>
             </div>
             <div style={{ borderLeft: '1px solid #e2e8f0' }} />
             <div>
-              <span style={{ display: 'block', fontSize: '1.25rem', fontWeight: '800', color: '#16a34a' }}>5</span>
+              <span style={{ display: 'block', fontSize: '1.35rem', fontWeight: '800', color: '#16a34a' }}>5</span>
               <span style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: '600' }}>Medical Records</span>
             </div>
           </div>

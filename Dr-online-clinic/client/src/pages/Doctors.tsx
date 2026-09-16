@@ -11,6 +11,7 @@ rating: number;
 yearsInPractice: number;
 visitLength: number;
 availableTime: string;
+
 }
 
 export const Doctors = () => {

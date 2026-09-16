@@ -15,6 +15,7 @@ const doctors = [
     yearsInPractice: 12,
     visitLength: 30,
     availableTime: "Today, 03:30 PM",
+    isAvailableNow: true,
   },
 
   {
@@ -27,6 +28,7 @@ const doctors = [
     yearsInPractice: 10,
     visitLength: 30,
     availableTime: "Today, 04:00 PM",
+    isAvailableNow: true,
   },
 
   {
@@ -39,6 +41,7 @@ const doctors = [
     yearsInPractice: 10,
     visitLength: 30,
     availableTime: "Today, 04:00 PM",
+    isAvailableNow: false,
   },
 ];
 
