@@ -202,7 +202,7 @@ lineHeight: '1.4',
 
 <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
 
-{/* Full Name Input (Sign Up Only) */}
+
 {!isLogin && (
 <div>
 <label style={{ display: 'block', fontSize: '0.825rem', fontWeight: '700', color: '#334155', marginBottom: '0.4rem' }}>

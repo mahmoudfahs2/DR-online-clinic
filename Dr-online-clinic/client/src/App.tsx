@@ -7,6 +7,9 @@ import "./App.css";
 import {Auth} from './pages/Auth';
 import {Dashboard}   from "./pages/Dashboard";
 import {MedicalRecords } from "./pages/MedicalRecords";
+import {Login} from "./pages/Login";
+import Register from "./pages/Register";
+import { ProtectedRoute } from "./components/ProtectedRoute";
 
 function App() {
   return (
@@ -45,9 +48,27 @@ function App() {
             <Route path="/doctors/:id" element={<DoctorDetails />} />
             <Route path="/login" element={<Auth />} />
             
-            <Route path="/appointments" element={<Appointments />} />
+           <Route
+  path="/appointments"
+  element={
+    <ProtectedRoute>
+      <Appointments />
+    </ProtectedRoute>
+  }
+/>
             <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/records" element={<MedicalRecords />} />
+            <Route
+  path="/records"
+  element={
+    <ProtectedRoute>
+      <MedicalRecords />
+    </ProtectedRoute>
+  }
+/>
+
+             <Route path="/login" element={<Login/>} />
+             <Route path="/regiser" element={<Register/>} />
+             
           </Routes>
         </main>
       </div>

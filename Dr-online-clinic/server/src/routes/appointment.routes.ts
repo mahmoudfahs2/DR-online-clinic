@@ -1,14 +1,17 @@
-import { Router } from "express";
+import express from 'express';
 import {
-createAppointment,
 getAppointments,
+createAppointment,
 updateAppointmentStatus,
-} from "../controllers/appointment.controller";
+deleteAppointment,
+} from '../controllers/appointment.controller';
+import { authenticateToken } from '../middleware/auth.middleware';
 
-const router = Router();
+const router = express.Router();
 
-router.post("/", createAppointment);
-router.get("/", getAppointments);
-router.patch("/:id/status", updateAppointmentStatus);
+router.get('/',authenticateToken, getAppointments);
+router.post('/',authenticateToken, createAppointment);
+router.patch('/:id/status',authenticateToken, updateAppointmentStatus);
+router.delete('/:id',authenticateToken, deleteAppointment);
 
-export default router
+export default router;

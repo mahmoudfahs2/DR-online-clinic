@@ -1,192 +1,173 @@
 
 import React, { useState, useEffect } from 'react';
+import { Calendar, Clock,Plus, Trash2 } from 'lucide-react';
+import { fetchWithAuth } from '../utils/api';
 
 interface Appointment {
 _id: string;
 doctorName: string;
-description?: string;
+specialty: string;
 date: string;
 time: string;
-patientName: string;
 status: 'pending' | 'confirmed' | 'cancelled';
 }
 
-const API_BASE_URL = 'http://localhost:5000/api/appointments';
-
-export const Appointments = () => {
+export const Appointments: React.FC = () => {
 const [appointments, setAppointments] = useState<Appointment[]>([]);
-const [loading, setLoading] = useState<boolean>(true);
+const [loading, setLoading] = useState(true);
+const [isModalOpen, setIsModalOpen] = useState(false);
 
 
-useEffect(() => {
-let isMounted = true;
+const [doctorName, setDoctorName] = useState('');
+const [specialty, setSpecialty] = useState('');
+const [date, setDate] = useState('');
+const [time, setTime] = useState('');
+
 
 const fetchAppointments = async () => {
 try {
-const response = await fetch(API_BASE_URL).catch(() => fetch('/api/appointments'));
-
-if (response && response.ok) {
-const contentType = response.headers.get('content-type');
-if (contentType && contentType.includes('application/json')) {
-const data = await response.json();
-if (isMounted) {
+setLoading(true);
+const res = await fetchWithAuth('http://localhost:5000/api/appointments');
+if (res.ok) {
+const data = await res.json();
 setAppointments(data);
 }
-}
-}
-} catch (err) {
-console.error('Error fetching appointments:', err);
+} catch (error) {
+console.error('Error fetching appointments:', error);
 } finally {
-if (isMounted) setLoading(false);
+setLoading(false);
 }
 };
 
-fetchAppointments();
-
-return () => {
-isMounted = false;
-};
+useEffect(() => {
+    const loadData=async()=>{
+        await fetchAppointments();
+    };
+ loadData();
 }, []);
 
 
-const handleStatusChange = async (id: string, newStatus: 'confirmed' | 'cancelled') => {
-
-setAppointments((prev) =>
-prev.map((app) => (app._id === id ? { ...app, status: newStatus } : app))
-);
-
+const handleCreateAppointment = async (e: React.FormEvent) => {
+e.preventDefault();
 try {
-const response = await fetch(`${API_BASE_URL}/${id}/status`, {
-method: 'PATCH', 
-headers: {
-'Content-Type': 'application/json',
-},
-body: JSON.stringify({ status: newStatus }),
+const res = await fetchWithAuth('http://localhost:5000/api/appointments', {
+method: 'POST',
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify({ doctorName, specialty, date, time }),
 });
 
-if (!response.ok) {
-console.error('Server failed to update status');
+if (res.ok) {
+const newApp = await res.json();
+setAppointments([newApp, ...appointments]);
+setIsModalOpen(false);
+setDoctorName('');
+setSpecialty('');
+setDate('');
+setTime('');
 }
 } catch (error) {
-console.error('Network error updating status:', error);
+console.error('Error creating appointment:', error);
+}
+};
+
+
+const handleDelete = async (id: string) => {
+try {
+const res = await fetchWithAuth(`http://localhost:5000/api/appointments/${id}`, {
+method: 'DELETE',
+});
+if (res.ok) {
+setAppointments(appointments.filter((app) => app._id !== id));
+}
+} catch (error) {
+console.error('Error deleting appointment:', error);
 }
 };
 
 return (
-<div style={{ padding: '2rem', maxWidth: '1000px', margin: '0 auto', fontFamily: 'sans-serif' }}>
-<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-<h2 style={{ margin: 0, color: '#0f172a' }}>My Appointments</h2>
+<div style={{ padding: '2rem', backgroundColor: '#f8fafc', minHeight: '100vh' }}>
+<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+<div>
+<h1 style={{ margin: 0, fontSize: '1.75rem', color: '#0f172a' }}>Appointments</h1>
+<p style={{ color: '#64748b', margin: '4px 0 0 0' }}>Manage your upcoming medical consultations</p>
+</div>
 <button
+onClick={() => setIsModalOpen(true)}
 style={{
-padding: '10px 18px',
-backgroundColor: '#0284c7',
+display: 'flex',
+alignItems: 'center',
+gap: '8px',
+padding: '12px 20px',
+background: 'linear-gradient(135deg, #2563eb, #06b6d4)',
 color: '#fff',
 border: 'none',
-borderRadius: '8px',
-fontWeight: '700',
+borderRadius: '12px',
+fontWeight: 600,
 cursor: 'pointer',
 }}
 >
-+ Book New Visit
+<Plus size={18} /> Book Appointment
 </button>
 </div>
 
-{loading ? (
-<p style={{ color: '#64748b' }}>Loading appointments...</p>
-) : (
 <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-{appointments.length > 0 ? (
+{loading ? (
+<p>Loading appointments...</p>
+) : appointments.length > 0 ? (
 appointments.map((app) => (
 <div
 key={app._id}
 style={{
+backgroundColor: '#fff',
+padding: '1.25rem',
+borderRadius: '16px',
+border: '1px solid #e2e8f0',
+
 display: 'flex',
 justifyContent: 'space-between',
 alignItems: 'center',
-padding: '1.25rem',
-borderRadius: '12px',
-backgroundColor: '#ffffff',
-border: '1px solid #e2e8f0',
-boxShadow: '0 2px 4px rgba(0,0,0,0.02)',
 }}
 >
 <div>
-<h3 style={{ margin: '0 0 0.25rem 0', color: '#1e293b' }}>{app.doctorName}</h3>
-<p style={{ margin: '0 0 0.5rem 0', color: '#64748b', fontSize: '0.875rem' }}>
-{app.description || 'Board-certified family physician focused on preventive healthcare.'}
-</p>
-
-
-<div style={{ display: 'flex', gap: '1rem', fontSize: '0.85rem', color: '#475569' }}>
-<span>📅{app.date}</span>
-<span>⏰{app.time}</span>
-<span>👤{app.patientName}</span>
-</div>
-</div>
-
-<div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-{app.status === 'pending' ? (
-<>
-<button
-onClick={() => handleStatusChange(app._id, 'confirmed')}
-style={{
-padding: '8px 16px',
-backgroundColor: '#16a34a',
-color: '#fff',
-border: 'none',
-borderRadius: '8px',
-fontWeight: '600',
-cursor: 'pointer',
-}}
->
-Accept
-</button>
-<button
-onClick={() => handleStatusChange(app._id, 'cancelled')}
-style={{
-padding: '8px 16px',
-backgroundColor: '#dc2626',
-color: '#fff',
-border: 'none',
-borderRadius: '8px',
-fontWeight: '600',
-cursor: 'pointer',
-}}
->
-Reject
-</button>
-</>
-) : (
-<span
-style={{
-padding: '6px 14px',
-borderRadius: '20px',
-fontSize: '0.85rem',
-fontWeight: '700',
-backgroundColor:
-app.status === 'confirmed'
-? '#dcfce7'
-: app.status === 'cancelled'
-? '#fef3c7'
-: '#f1f5f9',
-color:
-app.status === 'confirmed'
-? '#15803d'
-: app.status === 'cancelled'
-? '#b45309'
-: '#475569',
-textTransform: 'lowercase',
-}}
->
-{app.status}
+<h4 style={{ margin: '0 0 4px 0', fontSize: '1.1rem', color: '#0f172a' }}>{app.doctorName}</h4>
+<p style={{ margin: '0 0 8px 0', fontSize: '0.85rem', color: '#2563eb', fontWeight: 600 }}>{app.specialty}</p>
+<div style={{ display: 'flex', gap: '1rem', fontSize: '0.85rem', color: '#64748b' }}>
+<span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+<Calendar size={14} /> {app.date}
 </span>
-)}
+<span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+<Clock size={14} /> {app.time}
+</span>
 </div>
+</div>
+
+<button
+onClick={() => handleDelete(app._id)}
+style={{ border: 'none', background: '#fef2f2', padding: '10px', borderRadius: '10px', color: '#ef4444', cursor: 'pointer' }}
+>
+<Trash2 size={18} />
+</button>
 </div>
 ))
 ) : (
-<p style={{ color: '#64748b' }}>No appointments found.</p>
+<p>No appointments scheduled.</p>
 )}
+</div>
+
+{/* Book Modal */}
+{isModalOpen && (
+<div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+<form onSubmit={handleCreateAppointment} style={{ backgroundColor: '#fff', padding: '2rem', borderRadius: '16px', width: '100%', maxWidth: '400px' }}>
+<h3 style={{ marginTop: 0 }}>Book New Appointment</h3>
+<input type="text" placeholder="Doctor Name" required value={doctorName} onChange={(e) => setDoctorName(e.target.value)} style={{ width: '100%', marginBottom: '1rem', padding: '10px', borderRadius: '8px', border: '1px solid #cbd5e1' }} />
+<input type="text" placeholder="Specialty (e.g. Cardiology)" required value={specialty} onChange={(e) => setSpecialty(e.target.value)} style={{ width: '100%', marginBottom: '1rem', padding: '10px', borderRadius: '8px', border: '1px solid #cbd5e1' }} />
+<input type="date" required value={date} onChange={(e) => setDate(e.target.value)} style={{ width: '100%', marginBottom: '1rem', padding: '10px', borderRadius: '8px', border: '1px solid #cbd5e1' }} />
+<input type="time" required value={time} onChange={(e) => setTime(e.target.value)} style={{ width: '100%', marginBottom: '1rem', padding: '10px', borderRadius: '8px', border: '1px solid #cbd5e1' }} />
+<div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+<button type="button" onClick={() => setIsModalOpen(false)} style={{ padding: '8px 16px', borderRadius: '8px', border: '1px solid #cbd5e1', background: '#fff' }}>Cancel</button>
+<button type="submit" style={{ padding: '8px 16px', borderRadius: '8px', border: 'none', background: '#2563eb', color: '#fff' }}>Book</button>
+</div>
+</form>
 </div>
 )}
 </div>

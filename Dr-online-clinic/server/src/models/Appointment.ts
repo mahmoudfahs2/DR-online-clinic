@@ -1,29 +1,29 @@
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose, { Schema, Document } from 'mongoose';
 
 export interface IAppointment extends Document {
   patientName: string;
-  patientEmail: string;
-  doctorId: mongoose.Types.ObjectId;
+  doctorName: string;
   date: string;
-  timeSlot: string;
-  status: "pending" | "accepted" | "rejected" | "cancelled";
+  time: string;
+  status: 'pending' | 'confirmed' | 'cancelled';
+  reason?: string;
+  createdAt: Date;
 }
 
-const appointmentSchema = new Schema<IAppointment>(
+const AppointmentSchema: Schema = new Schema(
   {
     patientName: { type: String, required: true },
-    patientEmail: { type: String, required: true },
-    doctorId: { type: Schema.Types.ObjectId, ref: "Doctor", required: true },
+    doctorName: { type: String, required: true },
     date: { type: String, required: true },
-    timeSlot: { type: String, required: true },
+    time: { type: String, required: true },
     status: {
       type: String,
-      enum: ["pending", "accepted", "rejected", "cancelled"],
-      default: "pending",
+      enum: ['pending', 'confirmed', 'cancelled'],
+      default: 'pending',
     },
+    reason: { type: String, default: '' },
   },
   { timestamps: true }
 );
 
-const Appointment = mongoose.model<IAppointment>("Appointment", appointmentSchema);
-export default Appointment;
+export default mongoose.model<IAppointment>('Appointment', AppointmentSchema);

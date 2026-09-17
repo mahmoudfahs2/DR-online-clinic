@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   FileText, 
   Upload, 
@@ -12,75 +12,100 @@ import {
   FileSpreadsheet,
   X 
 } from 'lucide-react';
+import { fetchWithAuth } from '../utils/api';
 
 interface RecordItem {
-  id: string;
+  _id?: string;
+  id?: string;
   title: string;
   category: 'lab' | 'prescription' | 'scan' | 'general';
   doctorName: string;
   date: string;
   fileSize: string;
+  fileUrl?: string;
 }
 
 export const MedicalRecords: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [records, setRecords] = useState<RecordItem[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
 
-
-  const [records, setRecords] = useState<RecordItem[]>([
-    {
-      id: '1',
-      title: 'Blood Test Results (CBC & Lipid Profile)',
-      category: 'lab',
-      doctorName: 'Dr. Maya Harb',
-      date: 'Sep 12, 2026',
-      fileSize: '1.4 MB',
-    },
-    {
-      id: '2',
-      title: 'Hypertension Prescription & Treatment Plan',
-      category: 'prescription',
-      doctorName: 'Dr. John Doe',
-      date: 'Aug 28, 2026',
-      fileSize: '450 KB',
-    },
-    {
-      id: '3',
-      title: 'Chest X-Ray Scan Report',
-      category: 'scan',
-      doctorName: 'Dr. Ahmad Rahhal',
-      date: 'Jul 15, 2026',
-      fileSize: '3.8 MB',
-    },
-  ]);
-
-
+  
   const [newTitle, setNewTitle] = useState('');
-  const [newCategory, setNewCategory] = useState<'lab' | 'prescription' | 'scan' | 'general'>('lab');
+  const [newCategory, setNewCategory] = useState<RecordItem['category']>('lab');
   const [newDoctor, setNewDoctor] = useState('');
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
-  const handleAddRecord = (e: React.FormEvent) => {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const fetchRecords = async () => {
+      try {
+        setLoading(true);
+        const res = await fetchWithAuth('http://localhost:5000/api/records');
+        if (res.ok) {
+          const data = await res.json();
+          setRecords(data);
+        }
+      } catch (error) {
+        console.error('Error fetching records:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRecords();
+  }, []);
+
+
+  const handleAddRecord = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newTitle || !newDoctor) return;
 
-    const newEntry: RecordItem = {
-      id: Date.now().toString(),
-      title: newTitle,
-      category: newCategory,
-      doctorName: newDoctor,
-      date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-      fileSize: '1.2 MB',
-    };
+    const formData = new FormData();
+    formData.append('title', newTitle);
+    formData.append('category', newCategory);
+    formData.append('doctorName', newDoctor);
+    if (selectedFile) {
+      formData.append('file', selectedFile);
+    }
 
-    setRecords([newEntry, ...records]);
-    setNewTitle('');
-    setNewDoctor('');
-    setIsModalOpen(false);
+    try {
+      const res = await fetchWithAuth('http://localhost:5000/api/records', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (res.ok) {
+        const savedRecord = await res.json();
+        setRecords([savedRecord, ...records]);
+        setNewTitle('');
+        setNewDoctor('');
+        setSelectedFile(null);
+        setIsModalOpen(false);
+      } else {
+        alert('failed to register plaese check data.');
+      }
+    } catch (error) {
+      console.error('Error adding record:', error);
+    }
   };
 
-  const handleDelete = (id: string) => {
-    setRecords(records.filter((rec) => rec.id !== id));
+
+  const handleDelete = async (id: string) => {
+    try {
+      const res = await fetchWithAuth(`http://localhost:5000/api/records/${id}`, {
+        method: 'DELETE',
+      });
+
+      if (res.ok) {
+        setRecords(records.filter((rec) => (rec._id || rec.id) !== id));
+      }
+    } catch (error) {
+      console.error('Error deleting record:', error);
+    }
   };
 
   const filteredRecords = records.filter((rec) => {
@@ -107,7 +132,7 @@ export const MedicalRecords: React.FC = () => {
   return (
     <div style={{ padding: '2rem', backgroundColor: '#f8fafc', minHeight: '100vh', fontFamily: "'Inter', sans-serif" }}>
       
-      
+    
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
           <h1 style={{ margin: 0, fontSize: '1.75rem', fontWeight: 800, color: '#0f172a' }}>Medical Records</h1>
@@ -137,7 +162,7 @@ export const MedicalRecords: React.FC = () => {
         </button>
       </div>
 
-   
+    
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.25rem', marginBottom: '2rem' }}>
         <div style={{ backgroundColor: '#ffffff', padding: '1.25rem', borderRadius: '16px', border: '1px solid #e2e8f0' }}>
           <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 600 }}>Total Documents</span>
@@ -157,9 +182,8 @@ export const MedicalRecords: React.FC = () => {
         </div>
       </div>
 
-      
+    
       <div style={{ backgroundColor: '#ffffff', padding: '1rem', borderRadius: '16px', border: '1px solid #e2e8f0', marginBottom: '1.5rem', display: 'flex', gap: '1rem', flexWrap: 'wrap', justifyContent: 'space-between' }}>
-       
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', backgroundColor: '#f1f5f9', padding: '8px 14px', borderRadius: '10px', flex: '1', minWidth: '240px' }}>
           <Search size={18} color="#64748b" />
           <input
@@ -171,7 +195,6 @@ export const MedicalRecords: React.FC = () => {
           />
         </div>
 
-       
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
           {['all', 'lab', 'prescription', 'scan'].map((tab) => (
             <button
@@ -195,14 +218,19 @@ export const MedicalRecords: React.FC = () => {
         </div>
       </div>
 
-
+   
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-        {filteredRecords.length > 0 ? (
+        {loading ? (
+          <div style={{ textAlign: 'center', padding: '3rem', backgroundColor: '#ffffff', borderRadius: '16px', border: '1px solid #e2e8f0', color: '#64748b' }}>
+            <p style={{ margin: 0, fontWeight: 600 }}>Loading records...</p>
+          </div>
+        ) : filteredRecords.length > 0 ? (
           filteredRecords.map((item) => {
+            const recordId = item._id || item.id || '';
             const badge = getCategoryBadge(item.category);
             return (
               <div
-                key={item.id}
+                key={recordId}
                 style={{
                   backgroundColor: '#ffffff',
                   borderRadius: '16px',
@@ -234,15 +262,29 @@ export const MedicalRecords: React.FC = () => {
                   </div>
                 </div>
 
-             
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <button title="View" style={{ border: 'none', background: '#f1f5f9', padding: '10px', borderRadius: '10px', cursor: 'pointer', color: '#334155' }}>
-                    <Eye size={18} />
-                  </button>
-                  <button title="Download" style={{ border: 'none', background: '#f1f5f9', padding: '10px', borderRadius: '10px', cursor: 'pointer', color: '#2563eb' }}>
-                    <Download size={18} />
-                  </button>
-                  <button onClick={() => handleDelete(item.id)} title="Delete" style={{ border: 'none', background: '#fef2f2', padding: '10px', borderRadius: '10px', cursor: 'pointer', color: '#ef4444' }}>
+                  {item.fileUrl && (
+                    <a
+                      href={item.fileUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title="View Document"
+                      style={{ border: 'none', background: '#f1f5f9', padding: '10px', borderRadius: '10px', cursor: 'pointer', color: '#334155', display: 'inline-flex' }}
+                    >
+                      <Eye size={18} />
+                    </a>
+                  )}
+                  {item.fileUrl && (
+                    <a
+                      href={item.fileUrl}
+                      download
+                      title="Download Document"
+                      style={{ border: 'none', background: '#f1f5f9', padding: '10px', borderRadius: '10px', cursor: 'pointer', color: '#2563eb', display: 'inline-flex' }}
+                    >
+                      <Download size={18} />
+                    </a>
+                  )}
+                  <button onClick={() => handleDelete(recordId)} title="Delete" style={{ border: 'none', background: '#fef2f2', padding: '10px', borderRadius: '10px', cursor: 'pointer', color: '#ef4444' }}>
                     <Trash2 size={18} />
                   </button>
                 </div>
@@ -257,7 +299,7 @@ export const MedicalRecords: React.FC = () => {
         )}
       </div>
 
-      
+   
       {isModalOpen && (
         <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(15, 23, 42, 0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '1rem' }}>
           <div style={{ backgroundColor: '#ffffff', width: '100%', maxWidth: '500px', borderRadius: '20px', padding: '2rem', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)' }}>
@@ -307,10 +349,27 @@ export const MedicalRecords: React.FC = () => {
                 />
               </div>
 
-           
-              <div style={{ border: '2px dashed #cbd5e1', borderRadius: '12px', padding: '1.5rem', textAlign: 'center', backgroundColor: '#f8fafc', cursor: 'pointer' }}>
+            
+              <input
+                type="file"
+                ref={fileInputRef}
+                style={{ display: 'none' }}
+                accept=".pdf,.png,.jpg,.jpeg"
+                onChange={(e) => {
+                  if (e.target.files && e.target.files[0]) {
+                    setSelectedFile(e.target.files[0]);
+                  }
+                }}
+              />
+
+              <div
+                onClick={() => fileInputRef.current?.click()}
+                style={{ border: '2px dashed #cbd5e1', borderRadius: '12px', padding: '1.5rem', textAlign: 'center', backgroundColor: '#f8fafc', cursor: 'pointer' }}
+              >
                 <Upload size={28} color="#2563eb" style={{ marginBottom: '6px' }} />
-                <p style={{ margin: 0, fontSize: '0.85rem', color: '#475569', fontWeight: 600 }}>Click to choose file or drag & drop</p>
+                <p style={{ margin: 0, fontSize: '0.85rem', color: '#475569', fontWeight: 600 }}>
+                  {selectedFile ? selectedFile.name : 'Click to choose file or drag & drop'}
+                </p>
                 <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>PDF, PNG, JPG up to 10MB</span>
               </div>
 
